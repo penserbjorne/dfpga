@@ -1,8 +1,14 @@
-dfpga
-=====
+#dfpga
 
-An implementation of an FPGA slice entirely in 7400 series discrete logic, and a compiler for a custom HDL dialect for same.
+##Fork
 
- - discretefpga.brd and discretefpga.sch are the Eagle board and schematic.
- - dhdl.py is the HDL compiler; run it like `python dhdl.py infile outfile`.
- - *.dhdl files are sample DHDL scripts.
+- Fork de [Nick Johnson a.k.a. Arachnid](https://github.com/Arachnid/dfpga)
+- Fuente del articulo en el [Blog de Nick](http://blog.notdot.net/2012/10/Build-your-own-FPGA)
+
+##Descripción
+
+Implementación de una celda (slice) de un FPGA completamente con lógica discreta (componentes de la serie 7400), y un compilador para un dialecto HDL personalizado para la misma.
+
+- discretefpga.brd y discretefpga.sch son los archivos para la tarjeta y el esquematico en Eagle.
+- dhdl.py es el compilador HDL; para ejecutarlo ``python dhdl.py infile outfile``.
+- Los archivos *.dhdl son scripts DHDL de ejemplo.

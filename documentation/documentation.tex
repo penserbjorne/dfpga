@@ -275,8 +275,9 @@ El código en Arduino es sencillo, envía de forma serial los datos, implementan
 #include <Arduino.h>
 
 /* 
- *  Basado en el codigo "shiftOutCode, Hello World" de Carlyn Maw y 
- *  Tom Igoe como ejemplo en el sitio oficial de Arduino.
+ *  Basado en el codigo "shiftOutCode, Hello World" de 
+ *  Carlyn Maw y Tom Igoe como ejemplo en el sitio 
+ *  oficial de Arduino.
 */
 
 int dataPin = 9;    // Serial Data,  MOSI
@@ -307,14 +308,15 @@ void setup() {
     for (int j = 0; j < 4; j++) {
         // Recuperamos el byte a enviar
         data = dataArray[j];
-        // Ponemos en bajo el latch del registro para que no elimine 
-        // los datos que apenas esta cargando
+        // Ponemos en bajo el latch del registro para 
+        // que no elimine los datos que apenas esta 
+        // cargando
         digitalWrite(latchPin, LOW);
-        // Enviamos el datos de forma serial comenzando por el bit 
-        // mas significativo
+        // Enviamos el datos de forma serial comenzando
+        // por el bit mas significativo
         shiftOut(dataPin, clockPin, MSBFIRST, j);
-        // Regresamos a alto el latch del registro dado que ya no esta 
-        // escuchando
+        // Regresamos a alto el latch del registro dado 
+        // que ya no esta escuchando
         digitalWrite(latchPin, HIGH);
         // Delay para dar tiempo de respuesta al circuito
         delay(10);

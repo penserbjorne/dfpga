@@ -8,15 +8,19 @@
 //          : to count from 0 to 255                            //
 //****************************************************************
 
-//Pin connected to ST_CP of 74HC595
-int latchPin = 8;   // Clock para los FF,   LOAD[2] DCLK[3]
-//Pin connected to SH_CP of 74HC595
-int clockPin = 12;  // Clock para el serial,  SCK[1]
 ////Pin connected to DS of 74HC595
-int dataPin = 11;   // Serial Data,  MOSI
+int dataPin = 9;   // Serial Data,  MOSI
 
-int dCLK = 10;   //  Clock general,  DCLK[2]
+//Pin connected to SH_CP of 74HC595
+int clockPin = 10;  // Clock para el serial,  SCK[1]
+
+int dCLK = 11;   //  Clock general,  DCLK[2]
+
+//Pin connected to ST_CP of 74HC595
+int latchPin = 12;   // Clock para los FF,   LOAD[3]
+
 int clrFF = 13;   // Limpia los FF,  RESET[4]
+
 //Data Array
 byte dataArray[4];
 //Byte holder

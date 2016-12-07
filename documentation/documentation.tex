@@ -14,11 +14,17 @@
 \usepackage{vmargin}
 \usepackage{listings}
 \usepackage{xcolor}
-\lstset {
-    language=C,
-    backgroundcolor=\color{black!5}, % set backgroundcolor
-    basicstyle=\footnotesize,% basic font setting
+
+\lstset{
+  language=C,
+  basicstyle=\ttfamily,
+  backgroundcolor=\color{black!5},
+  keywordstyle=\color{blue}\ttfamily,
+  stringstyle=\color{red}\ttfamily,
+  commentstyle=\color{green}\ttfamily,
+  morecomment=[l][\color{magenta}]{\#}
 }
+
 \setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
 
 \title{DFPGA - ''Discrete FPGA''} % Title

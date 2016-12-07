@@ -267,6 +267,8 @@ Se trata de un total de 12 CIs de lógica discreta para implementar una celda mo
 
 \section{Construcción Virtual}
 
+\subsection{Esquema}
+
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{5-input-output-routing.png}
@@ -281,6 +283,142 @@ Se trata de un total de 12 CIs de lógica discreta para implementar una celda mo
   \label{fig:8}
 \end{figure}
 
+\pagebreak
+
+\subsection{Descripción de pines}
+
+\textbf{Entradas para programar el FPGA}
+
+	$-->$	(01)SCK	:	Clock para el serial
+	
+	$-->$	(02)LOAD	:	Clock general
+	
+	$-->$	(03)DCLK	:	Clock para la salida paralela de los FF
+	
+	$-->$	(04)RESET	:	Limpia los FF
+	
+	$-->$	(01-Jumper)MOSI	:	Serial Data
+	
+\textbf{Entradas y salidas, interruptor de buses (74HC4066)}
+
+\textit{$->$	IC6}
+
+	$-->$	(01)L0	:	Entrada
+	
+	$-->$	(04)L1	:	Entrada
+	
+	$-->$	(08)U1	:	Entrada
+	
+	$-->$	(11)U0	:	Entrada
+	
+	$-->$	(03)R0	:	Salida
+	
+	$-->$	(03)R1	:	Salida
+	
+	$-->$	(09)D1	:	Salida
+	
+	$-->$	(10)D0	:	Salida
+	
+\textbf{Registros de Corrimiento	(74HC595D)}
+
+\textit{MSB	$->$	IC12}
+
+\textit{XXX	$->$	IC11}
+	
+\textit{XXX	$->$	IC9}
+	
+\textit{LSB	$->$	IC1}
+
+\textbf{Bytes de Control}
+
+\textit{$->$	IC12}
+
+	$-->$	(01)ASYNC\_0	:	Decide si la salida 0 es sincronia o asincrona.
+	
+	$-->$	(02)ASYNC\_1	:	Decide si la salida 1 es sincronia o asincrona.
+	
+	$-->$	(03)O0\_TO\_D1	:	Indica que la salida 0 sera por D1.
+	
+	$-->$	(04)O0\_TO\_D0\_E0	:	Indica que la salida 0 sera por D0. Se activa en 0.
+	
+	$-->$	(05)O1\_TO\_R0	:	Indica que la salida 1 sera por R0.
+	
+	$-->$	(06)O1\_TO\_R1\_E0	:	Indica que la salida 1 sera por R1. Se activa en 0.
+	
+	$-->$	(09)MISO	:	Bit de expansion. No lo estamos utilizando.
+	
+\textit{$->$	IC11}
+	
+	$-->$	(01)L0\_TO\_R0	:	Mueve el valor de la entrada L0 a la salida R0.
+	
+	$-->$	(02)L1\_TO\_R1	:	Mueve el valor de la entrada L1 a la salida R1.
+	
+	$-->$	(03)U1\_TO\_D1	:	Mueve el valor de la entrada U1 a la salida D1.
+	
+	$-->$	(04)U0\_TO\_D0	:	Mueve el valor de la entrada U0 a la salida D0.
+	
+	$-->$	(05)L0\_TO\_A/L1\_TO\_A\_E0	:	Mueve el valor de la entrada L0 a la entrada A del mux (en alto). Mueve el valor de la entrada L1 a la entrada A del mux (en bajo).
+	
+	$-->$	(06)U1\_TO\_B/U0\_TO\_B\_E0	:	Mueve el valor de la entrada U1 a la entrada B del mux (en alto). Mueve el valor de la entrada U0 a la entrada B del mux (en bajo).
+	
+	$-->$	(07)R0\_TO\_C/R1\_TO\_C\_E0	:	Mueve el valor de la entrada R0 a la entrada C del mux (en alto). Mueve el valor de la entrada R1 a la entrada C del mux (en bajo).
+	
+\textbf{Bytes de Datos}
+
+\textit{$->$	IC9}
+
+	$-->$	Tabla de Verdad
+	
+\textit{$-->$	IC1}
+
+	$-->$	Tabla de Verdad
+	
+\textbf{Mutliplexores	(74HC251D)}
+
+\textit{$-->$	IC3}
+
+	$-->$	Entradas del Mux, son las entradas de la LUT
+	
+	$-->$	(11)A
+	
+	$-->$	(10)B
+	
+	$-->$	(09)C
+	
+\textit{$->$	IC10}
+
+	$-->$	Entradas del Mux, son las entradas de la LUT
+	
+	$-->$	(11)A
+	
+	$-->$	(10)B
+	
+	$-->$	(09)C
+	
+\textbf{Registro de 4 bits. FF-D para funcionamiento síncrono/asíncrono	(74HC173D)}
+
+\textit{$->$	IC13}
+
+	$-->$(07)CLK	:	Clock que generamos nosotros
+	
+	$-->$(14)D1	:	Entrada
+	
+	$-->$(13)D2	:	Entrada
+	
+	$-->$(01)M	:	Activan la lectura
+	
+	$-->$(02)N	:	Activan la lectura
+
+\textbf{Buses de tres estados (74HC125D y 74HC126D)}
+
+\textit{$->$	IC4,IC5,IC7,IC8}
+
+	$-->$	(var)	O0	:	Salidas a DX
+	
+	$-->$	(var)	O1	:	Salidas a RX
+	
+\pagebreak
+
 \section{Código}
 
 El autor del proyecto en los recursos y fuentes que libero no incluyo el código del programa para cargar la información en la celda diseñada, por lo que se implemento un programa en Arduino que permite el envió del programa en forma serial. 
@@ -293,15 +431,15 @@ El código en Arduino es sencillo, envía de forma serial los datos, implementan
 #include <Arduino.h>
 
 /* 
- *  Basado en el codigo "shiftOutCode, Hello World" de 
- *  Carlyn Maw y Tom Igoe como ejemplo en el sitio 
- *  oficial de Arduino.
+ *  Basado en el codigo "shiftOutCode, Hello World" de Carlyn Maw y 
+ *  Tom Igoe como ejemplo en el sitio oficial de Arduino.
 */
+
 
 int dataPin = 9;    // Serial Data,  MOSI
 int clockPin = 10;  // Clock para el serial,  SCK[1]
-int dCLK = 11;      //  Clock general,  DCLK[2]
-int latchPin = 12;  // Clock para los FF,   LOAD[3]
+int latchPin = 11;  // Clock general,  LOAD[2]
+int dCLK = 12;      // Clock para la salida paralela de los FF,   DCLK[3]
 int clrFF = 13;     // Limpia los FF,  RESET[4]
 byte dataArray[4];  // Data Array
 byte data;          // Byte holder
@@ -315,10 +453,10 @@ void setup() {
     pinMode(dCLK, OUTPUT);
 
     // Programa que se enviara al FPGA
-    dataArray[0] = 0x00;
-    dataArray[1] = 0xff;
-    dataArray[2] = 0x1c;
-    dataArray[3] = 0x76;
+    dataArray[3] = 0xff;
+    dataArray[2] = 0xff;
+    dataArray[1] = 0x00;
+    dataArray[0] = 0x74; // 0b1110100
 
      // Limpiamos los FF (clear)
     digitalWrite(clrFF, HIGH);
@@ -326,19 +464,24 @@ void setup() {
     for (int j = 0; j < 4; j++) {
         // Recuperamos el byte a enviar
         data = dataArray[j];
-        // Ponemos en bajo el latch del registro para 
-        // que no elimine los datos que apenas esta 
-        // cargando
+        // Ponemos en bajo el latch del registro para que no elimine 
+        // los datos que apenas esta cargando
         digitalWrite(latchPin, LOW);
-        // Enviamos el datos de forma serial comenzando
-        // por el bit mas significativo
-        shiftOut(dataPin, clockPin, MSBFIRST, j);
-        // Regresamos a alto el latch del registro dado 
-        // que ya no esta escuchando
+        // Enviamos el datos de forma serial comenzando por el bit 
+        // menos significativo
+        shiftO(dataPin, clockPin, LSBFIRST, data);
+        // Regresamos a alto el latch del registro dado que ya no esta 
+        // escuchando
         digitalWrite(latchPin, HIGH);
         // Delay para dar tiempo de respuesta al circuito
-        delay(10);
+        delay(250);
     }
+    
+    // Indicamos que la carga en fora serial se despliegue en 
+    // forma parelara
+    digitalWrite(latchPin, HIGH);
+    delay(250);
+    digitalWrite(latchPin, LOW);
     // Desactivamos la limpieza de los FF
     digitalWrite(clrFF, LOW);
     // Ponemos el reloj en cero
@@ -346,11 +489,27 @@ void setup() {
 }
 
 void loop() {
-    // Switcheamos el bit del reloj cada segundo
+    // Switcheamos el bit del reloj
     digitalWrite(dCLK, HIGH);
-    delay(1000);
+    delay(250);
     digitalWrite(dCLK, LOW);
-    delay(1000);
+    delay(250);
+}
+
+void shiftO(uint8_t dataPin, uint8_t clockPin, 
+            uint8_t bitOrder, uint8_t val)
+{
+    uint8_t i;
+    for (i = 0; i < 8; i++)  {
+        if (bitOrder == LSBFIRST)
+            digitalWrite(dataPin, !!(val & (1 << i)));
+        else
+            digitalWrite(dataPin, !!(val & (1 << (7 - i))));
+        digitalWrite(clockPin, HIGH);
+        delay(250);
+        digitalWrite(clockPin, LOW);
+        delay(250);
+    }
 }
 \end{lstlisting}
 

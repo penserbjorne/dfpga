@@ -1,14 +1,17 @@
 import unittest
 import dhdl
 
+
 class BaseTest(unittest.TestCase):
-    def sliceFromStr(self, s):
+    @staticmethod
+    def sliceFromStr(s):
         return dhdl.Slice.fromAST(dhdl.slicedef.parseString(s)[0])
+
 
 class ParserTest(BaseTest):
     def test_bus(self):
         self.assertIsInstance(dhdl.bus.parseString("bus1")[0],
-            dhdl.BusIdentifier)
+                              dhdl.BusIdentifier)
     
     def test_expr(self):
         expr = dhdl.expr.parseString("a | b & c ^ d ^ e")[0]
@@ -65,8 +68,9 @@ class ParserTest(BaseTest):
     def test_all_busids(self):
         testdef = "slice foo { (l0 & u0) | u0 -> r0; }"
         slice = dhdl.slicedef.parseString(testdef)[0]
-        self.assertEquals(set(['l0', 'u0']), slice.statements[0].expr.allBusIds())
-        
+        self.assertEquals({'l0', 'u0'}, slice.statements[0].expr.allBusIds())
+
+
 class SliceDefTest(BaseTest):
     def test_defaults(self):
         testdef = "slice foo {}"
@@ -127,6 +131,7 @@ class SliceDefTest(BaseTest):
         slice = self.sliceFromStr(testdef)
         self.assertEquals([True, False] * 4, slice.luts[1])
 
+
 class SliceCompileTest(BaseTest):
     def test_defaults(self):
         testdef = "slice foo { }"
@@ -155,6 +160,7 @@ class SliceCompileTest(BaseTest):
         testdef = "slice foo { l0 sync -> r0; u0 sync -> d0; }"
         compiled = self.sliceFromStr(testdef).compile()
         self.assertEquals("7814ccaa", compiled.encode('hex'))
+
 
 class CompilerTest(BaseTest):
     def test_invoke_slices(self):

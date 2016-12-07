@@ -66,7 +66,7 @@ class NotExpression(ASTNode):
         
     def __call__(self, inputs):
         return not self.args[0](inputs)
-        
+
 class OrExpression(ASTNode):
     def __call__(self, inputs):
         return reduce(operator.__or__, (x(inputs) for x in self.args), False)
@@ -143,11 +143,11 @@ class SliceConfigurationException(Exception):
         return "%s: %d %s" % (type(self).__name__, self.loc, self.message)
 
 def SliceInvocationException(Exception): pass
-        
+
 def packBools(b):
     # Packs booleans into an int, LSB first
     return reduce(operator.__add__, (int(x) << i for i, x in enumerate(b)))
-        
+
 class Slice(object):
     def __init__(self, name):
         self.name = name
@@ -264,7 +264,7 @@ def compile(s):
 argparser = argparse.ArgumentParser(description="Compiles DHDL definitions")
 argparser.add_argument('infile', metavar='INFILE', nargs='?', default='-')
 argparser.add_argument('outfile', metavar='OUTFILE', nargs='?', default='-')
-    
+
 def main():
     args = argparser.parse_args()
     if args.infile == '-':

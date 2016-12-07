@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[12pt]{article}
 \usepackage[spanish]{babel}
-\usepackage{natbib}
+%\usepackage{natbib}
 \usepackage{url}
 \usepackage[utf8x]{inputenc}
 \usepackage{amsmath}
@@ -14,6 +14,7 @@
 \usepackage{vmargin}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{hyperref}
 
 \lstset{
   language=C,
@@ -111,7 +112,7 @@ Implementar un FPGA con lógica  discreta utilizando completamente circuitos int
 \section{Teoría}
 
 \subsection{Definición de FPGA}
-Los FPGA (Field Programmable Gate Arrays) son dispositivos prefabricados que pueden ser programados eléctricamente en al momento para convertirse en casi cualquier tipo de circuito o sistema digital. Para producciones de volumen bajo a medio, los FPGAs ofrecen soluciones más baratas y un tiempo de comercialización más rápido en comparación con los Circuitos Integrados de Aplicación Específica (ASIC), que normalmente requieren una gran cantidad de recursos en términos de tiempo y dinero para obtener el primer dispositivo. Los FPGAs por otro lado toman menos de un minuto para configurar y suelen tener un costo economico menor. También para diversos requisitos, una parte del FPGA se puede reconfigurar parcialmente mientras que el resto del FPGA sigue funcionando. Cualquier actualización futura en el producto final se puede actualizar fácilmente simplemente descargando un nuevo flujo de bits que representan la aplicación. La principal ventaja de los FPGAs es la flexibilidad.
+\cite{ref:web1} Los FPGA (Field Programmable Gate Arrays) son dispositivos prefabricados que pueden ser programados eléctricamente en al momento para convertirse en casi cualquier tipo de circuito o sistema digital. Para producciones de volumen bajo a medio, los FPGAs ofrecen soluciones más baratas y un tiempo de comercialización más rápido en comparación con los Circuitos Integrados de Aplicación Específica (ASIC), que normalmente requieren una gran cantidad de recursos en términos de tiempo y dinero para obtener el primer dispositivo. Los FPGAs por otro lado toman menos de un minuto para configurar y suelen tener un costo economico menor. También para diversos requisitos, una parte del FPGA se puede reconfigurar parcialmente mientras que el resto del FPGA sigue funcionando. Cualquier actualización futura en el producto final se puede actualizar fácilmente simplemente descargando un nuevo flujo de bits que representan la aplicación. La principal ventaja de los FPGAs es la flexibilidad.
 
 La naturaleza flexible de los FPGAs los hace significativamente más grandes, más lentos y consumen más energía que sus equivalentes ASIC. Los FPGAs presentan una alternativa convincente para la implementación de sistemas digitales debido a su menor tiempo de comercialización y bajo costo de volumen.
 
@@ -203,6 +204,8 @@ Dadas todas las consideraciones anteriores, el diseño de un FPGA y todo su ento
 
 De forma concluyente, este proyecto se considera como una extensión a modo de análisis de estudio del sobre el proyecto en el cual se basa, dado que el proyecto original es una buena implementación de un FPGA pero que desafortunadamente no se encuentra lo suficientemente documentado y explicado, este documento trata de abordar de la mejor manera posible el diseño e implementación original, así como la integración de elementos faltantes en las fuentes compartidas por el autor.
 
+El proyecto original se puede encontrar en el \cite{ref:web2}\href{http://blog.notdot.net/2012/10/Build-your-own-FPGA}{blog del autor, de Nick Johnson a.k.a. Arachnid}.
+
 \subsection{Planteamiento de diseño}
 
 \subsubsection{CLB y LUT}
@@ -217,11 +220,25 @@ Sin embargo, una solución simple se presenta: registros de desplazamiento. Un r
  
 Para nuestro CLB de FPGA, utilizaremos dos de estos LUTs discretos, con sus entradas unidas entre sí. ¿Por qué dos? Porque una capacidad combinada de 3 entradas y 2 salidas sobre el más pequeño puede implementar cosas interesantes con 3 entradas y 2 salidas se permite construir un sumador completo en una sola celda. Cualquier cantidad menor de entradas o salidas limita severamente nuestras capacidades.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[]{8-lut.png}
+  \caption{LUT básico.}
+  \label{fig:5}
+\end{figure}
+
 \subsubsection{Arquitectura Sincrona/Asíncrona}
 
 El siguiente componente son los flipflops y la lógica para seleccionar el modo asíncrono o síncrono. Hay una gran variedad de flipflops y registros disponibles, de 2 a 8 en un único IC, y con varios métodos de control, por lo que no hay problema. Elegir entre síncrono y asincrónico es un poco más difícil. La elección natural aquí es un multiplexor de 2 vías, pero mientras existen chips con múltiples multiplexores de 2 vías, todas juntan las líneas de selección, lo que significa que debe elegir la misma entrada para todos los multiplexores en un chip. Obviamente, esto no es realmente adecuado para nuestra aplicación.
 
 Afortunadamente, un multiplexor de 2 vías no es difícil de construir. Hay varias opciones, pero la más eficiente es usar bufferes de tres estados. Hay un par en la gama 7400 - el 74**125 y el 74**126 que resuelven nuestros requisitos. Cada uno contiene cuatro búferes de tres estados, la única diferencia entre los dos chips es que uno habilita su salida cuando la línea de habilitación es alta, mientras que el otro permite su salida cuando es baja. Al unir estos juntos en pares, podemos crear multiplexores, cada IC nos brinda cuatro multiplexores independientes. Dos multiplexores más un registro nos consigue nuestra lógica de selección de sincrona/asíncrona. Necesitamos una forma de controlar los multiplexores, por lo que una poner en cadena en otro registro de desplazamiento nos permite programarlos. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{9-lut-mux.png}
+  \caption{Los dos LUTs con su multiplexor para seleccionar modo síncrono/asíncrono.}
+  \label{fig:6}
+\end{figure}
 
 \subsubsection{Enrutamiento}
 
@@ -233,6 +250,7 @@ Los buses de un bit son un poco estrechos, incluso para nuestro propósito, apli
  
 Para los interruptores de bus, se usara la configuración más simple: un interruptor que conecta cada una de las líneas superior e inferior, y un interruptor que conecta cada una de las líneas izquierda y derecha, que se puede abrir o cerrar individualmente. El CI 74**4066 es un ''conmutador bilateral cuádruple'' que proporciona una manera conveniente de hacer esto en un solo CI. Todo el enrutamiento implica 3 bits para los multiplexores de entrada, 4 bits para la salida habilitada, y 4 bits más para los interruptores de bus, por lo que vamos a utilizar otro registro de desplazamiento y algunos de los bits sobrantes de otro registro que hemos añadido para la selección síncrona/asíncrona.
 
+El sistema de enrutamiento con el metodo de selccion de modo síncrono/asíncrono se puede ver en la figura \ref{fig:7}
 \subsubsection{Componentes a utilizar}
 
 Con el diseño anterior, se llega a que se necesitan los siguientes componentes. 
@@ -252,15 +270,15 @@ Se trata de un total de 12 CIs de lógica discreta para implementar una celda mo
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{5-input-output-routing.png}
-  \caption{Vista de la arquitectura de enrutamiento y E/S la celda del FPGA.}
-  \label{fig:5}
+  \caption{Vista de la arquitectura de enrutamiento, E/S y modo la parte correspondiente al modo de selección síncrono/asíncrono la celda del FPGA.}
+  \label{fig:7}
 \end{figure}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{6-clb-lut.png}
   \caption{Vista de la arquitectura de la CLE, LUTs y método de sincronización.}
-  \label{fig:5}
+  \label{fig:8}
 \end{figure}
 
 \section{Código}
@@ -335,6 +353,24 @@ void loop() {
     delay(1000);
 }
 \end{lstlisting}
+
+\section{Referencias}
+\begin{thebibliography}{}
+
+\bibitem{ref:web1}
+  Farooq, U.; Marrakchi, Z.; Mehrez, H.,
+  (2012),
+  Chapter2, FPGA Architectures: An Overview. En Tree-based Heterogeneous FPGA Architectures Application Specific Exploration and Optimization (7, 8, 9, 11, 12, 13, 46, 47),
+  New York: Springer.
+
+\bibitem{ref:web2}
+  Nick Johnson a.k.a. Arachnid,
+  (31/10/2012),
+  Build your own FPGA,
+  07/12/2016,
+  Sitio web: \url{http://blog.notdot.net/2012/10/Build-your-own-FPGA}
+
+\end{thebibliography}
 
 \bibliographystyle{plain}
 \bibliography{biblist}

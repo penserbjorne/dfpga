@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Descripci\363n del problema}{}% 1
+\BOOKMARK [1][-]{section.2}{Teor\355a}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Definici\363n de FPGA}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Bloque l\363gico configurable}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Arquitecturas de enrutamiento FPGA}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Arquitectura As\355ncrona FPGA}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{Programaci\363n}{section.2}% 7
+\BOOKMARK [1][-]{section.3}{M\351todo de soluci\363n}{}% 8
+\BOOKMARK [2][-]{subsection.3.1}{Introducci\363n}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.2}{Planteamiento de dise\361o}{section.3}% 10
+\BOOKMARK [3][-]{subsubsection.3.2.1}{CLB y LUT}{subsection.3.2}% 11
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Arquitectura Sincrona/As\355ncrona}{subsection.3.2}% 12
+\BOOKMARK [3][-]{subsubsection.3.2.3}{Enrutamiento}{subsection.3.2}% 13
+\BOOKMARK [3][-]{subsubsection.3.2.4}{Componentes a utilizar}{subsection.3.2}% 14
+\BOOKMARK [1][-]{section.4}{Construcci\363n Virtual}{}% 15
+\BOOKMARK [1][-]{section.5}{C\363digo}{}% 16
+\BOOKMARK [1][-]{section.6}{Referencias}{}% 17

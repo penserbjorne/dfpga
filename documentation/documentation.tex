@@ -453,10 +453,10 @@ void setup() {
     pinMode(dCLK, OUTPUT);
 
     // Programa que se enviara al FPGA
-    dataArray[3] = 0xff;
-    dataArray[2] = 0xff;
-    dataArray[1] = 0x00;
-    dataArray[0] = 0x74; // 0b1110100
+    dataArray[3] = 0xff;  // IC1
+    dataArray[2] = 0xff;  // IC9
+    dataArray[1] = 0x00;  // IC11
+    dataArray[0] = 0x74;  // IC12
 
      // Limpiamos los FF (clear)
     digitalWrite(clrFF, HIGH);
